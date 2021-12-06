@@ -220,7 +220,6 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         settings.aspectRatio = GetAspectRatio(settings.aspectRatioDesc, settings.aspectRatio, settings.flipAspect);
         resolution = new Vector2Int(settings.columnCount, 1);
         resolution.y = (int)(((float)Screen.height / Screen.width) * resolution.x * ((float)settings.aspectRatio.x / settings.aspectRatio.y));
-        Debug.Log(resolution);
     }
 
     // Here you can inject one or multiple render passes in the renderer.

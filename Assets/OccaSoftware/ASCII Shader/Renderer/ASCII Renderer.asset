@@ -58,8 +58,8 @@ MonoBehaviour:
     aspectRatioDesc: 5
     aspectRatio: {x: 1, y: 1}
     flipAspect: 0
-    fontColor: {r: 0, g: 1, b: 0, a: 1}
+    fontColor: {r: 1, g: 1, b: 1, a: 1}
     fontColorStrength: 0
     backingColor: {r: 0, g: 0, b: 0, a: 1}
-    backingColorStrength: 0.849
-    iterations: 3
+    backingColorStrength: 0.3
+    iterations: 2
