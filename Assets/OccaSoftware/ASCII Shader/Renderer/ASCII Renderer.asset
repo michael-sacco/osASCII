@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
-  m_Name: ForwardRenderer
+  m_Name: ASCII Renderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
   - {fileID: 2621031769369273372}
@@ -51,12 +51,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
+    fontAsset: {fileID: 2800000, guid: e5cfa88641aa1d2499635b455a6e34d6, type: 3}
     numberOfCharacters: 10
     resolution: {x: 64, y: 32}
     fontRatio: 3
     fontColor: {r: 1, g: 1, b: 1, a: 1}
-    fontColorStrength: 1
+    fontColorStrength: 0
     backingColor: {r: 0, g: 0, b: 0, a: 1}
-    backingColorStrength: 0.2
+    backingColorStrength: 0.8
     iterations: 4
     renderPassEvent: 550

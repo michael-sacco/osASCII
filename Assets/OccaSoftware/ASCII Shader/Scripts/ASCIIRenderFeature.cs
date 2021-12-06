@@ -36,6 +36,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             asciiMaterial.SetFloat(ShaderParams.fontColorStrength, shaderData.fontColorStrength);
             asciiMaterial.SetColor(ShaderParams.backingColor, shaderData.backingColor);
             asciiMaterial.SetFloat(ShaderParams.backingColorStrength, shaderData.backingColorStrength);
+            asciiMaterial.SetTexture(ShaderParams.fontAsset, shaderData.fontAsset);
         }
 
 
@@ -152,12 +153,17 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
     [System.Serializable]
     public class Settings
     {
+        [Header("Font Settings")]
+        public Texture2D fontAsset;
+
         [Min(1)]
         public int numberOfCharacters = 10;
         [Min(1)]
         public Vector2Int resolution = new Vector2Int(64, 32);
         [Min(1)]
         public float fontRatio = 3;
+
+        [Header("Display Settings")]
         [ColorUsage(false, true)]
         public Color fontColor = Color.white;
         [Range(0f, 1f)]
@@ -167,8 +173,12 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         [Range(0f, 1f)]
         public float backingColorStrength = 0.2f;
 
+        [Header("Rescaling Settings")]
         [Range(0,8)]
         public int iterations = 4;
+
+
+        [Header("Rendering Settings")]
         public RenderPassEvent renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
     }
 
@@ -200,7 +210,8 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             settings.fontColor,
             settings.fontColorStrength,
             settings.backingColor,
-            settings.backingColorStrength
+            settings.backingColorStrength,
+            settings.fontAsset
             );
 
         m_ScriptablePass.SetupASCIIMaterial(shaderData);
@@ -219,8 +230,9 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public float fontColorStrength;
         public Color backingColor;
         public float backingColorStrength;
+        public Texture2D fontAsset;
 
-        public ASCIIShaderData(int numberOfCharacters, Vector2Int resolution, float fontRatio, Color fontColor, float fontColorStrength, Color backingColor, float backingColorStrength)
+        public ASCIIShaderData(int numberOfCharacters, Vector2Int resolution, float fontRatio, Color fontColor, float fontColorStrength, Color backingColor, float backingColorStrength, Texture2D fontAsset)
         {
             this.numberOfCharacters = numberOfCharacters;
             this.resolution = new Vector4(resolution.x, resolution.y, 0, 0);
@@ -229,6 +241,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             this.fontColorStrength = fontColorStrength;
             this.backingColor = backingColor;
             this.backingColorStrength = backingColorStrength;
+            this.fontAsset = fontAsset;
         }
     }
 
@@ -242,6 +255,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public static int fontColorStrength = Shader.PropertyToID("_ASCIIFontColorStrength");
         public static int backingColor = Shader.PropertyToID("_ASCIIBackingColor");
         public static int backingColorStrength = Shader.PropertyToID("_ASCIIBackingColorStrength");
+        public static int fontAsset = Shader.PropertyToID("_ASCIIFontAsset");
     }
 }
 
