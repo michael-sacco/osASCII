@@ -18,8 +18,12 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         RenderTargetHandle currentSource;
         RenderTargetHandle currentTarget;
         List<RenderTargetHandle> renderTargetHandles = new List<RenderTargetHandle>();
+        RenderTargetHandle finalUpscaleHandle;
 
         private int iterations = 5;
+
+        bool isAfterRendering = false;
+        
 
         public void SetSource(RenderTargetIdentifier identifier)
         {
@@ -50,11 +54,20 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             this.iterations = iterations;
         }
 
-        public void InitializeRenderTextures()
+        public void InitializeRenderTextures(int iterations)
         {
             asciiRenderTarget.Init("_ASCIITarget");
-            currentSource.Init("_CurrentSource");
-            currentTarget.Init("_CurrentTarget");
+            if(iterations >= 1)
+            {
+                currentSource.Init("_CurrentSource");
+                currentTarget.Init("_CurrentTarget");
+                finalUpscaleHandle.Init("_FinalUpscale");
+            }
+        }
+
+        public void SetRenderEventState(bool isAfterRendering)
+        {
+            this.isAfterRendering = isAfterRendering;
         }
 
         // This method is called before executing the render pass.
@@ -65,6 +78,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             RenderTextureDescriptor rtDescriptor = cameraTextureDescriptor;
+            rtDescriptor.colorFormat = RenderTextureFormat.DefaultHDR;
             cmd.GetTemporaryRT(asciiRenderTarget.id, rtDescriptor);
         }
 
@@ -78,17 +92,22 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
 
             RenderTextureDescriptor rtDescriptor = renderingData.cameraData.cameraTargetDescriptor;
             rtDescriptor.colorFormat = RenderTextureFormat.DefaultHDR;
-            renderTargetHandles.Clear();
+            
+            if(renderTargetHandles.Count > 0)
+                renderTargetHandles.Clear();
 
-            if(iterations >= 1)
+            RenderTargetIdentifier renderSource = isAfterRendering ? "_AfterPostProcessTexture" : source;
+            RenderTargetIdentifier asciiSource = renderSource;
+
+            if (iterations >= 1)
             {
-
+                RenderTextureDescriptor downscaleDescriptor = rtDescriptor;
                 rescaleMaterial.SetFloat("_Rescale_UVOffset", 1.0f);
                 for (int i = 0; i < iterations; i++)
                 {
-                    rtDescriptor.width /= 2;
-                    rtDescriptor.height /= 2;
-                    if (rtDescriptor.width < 2 || rtDescriptor.height < 2)
+                    downscaleDescriptor.width /= 2;
+                    downscaleDescriptor.height /= 2;
+                    if (downscaleDescriptor.width < 2 || downscaleDescriptor.height < 2)
                     {
                         iterations = i;
                         break;
@@ -96,12 +115,12 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
 
                     RenderTargetHandle tempHandle = new RenderTargetHandle();
                     tempHandle.Init("_Sample" + i);
-                    cmd.GetTemporaryRT(tempHandle.id, rtDescriptor);
+                    cmd.GetTemporaryRT(tempHandle.id, downscaleDescriptor);
                     renderTargetHandles.Add(tempHandle);
 
                     if (i == 0)
                     {
-                        Blit(cmd, source, tempHandle.Identifier(), rescaleMaterial);
+                        Blit(cmd, renderSource, tempHandle.Identifier(), rescaleMaterial);
                     }
                     else
                     {
@@ -119,18 +138,14 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
                     currentSource = currentTarget;
                 }
 
-                Blit(cmd, currentSource.Identifier(), asciiRenderTarget.Identifier(), rescaleMaterial);
-                cmd.SetGlobalTexture(ShaderParams.inputTex, currentSource.id);
+                
+                cmd.GetTemporaryRT(finalUpscaleHandle.id, rtDescriptor);
+                Blit(cmd, currentSource.Identifier(), finalUpscaleHandle.Identifier(), rescaleMaterial);
+                asciiSource = finalUpscaleHandle.id;
             }
-            else
-            {
-                cmd.SetGlobalTexture(ShaderParams.inputTex, source);
-            }
-
-            RenderTargetIdentifier asciiSource = iterations >= 1 ? currentSource.id : source;
 
             Blit(cmd, asciiSource, asciiRenderTarget.Identifier(), asciiMaterial);
-            Blit(cmd, asciiRenderTarget.Identifier(), source);
+            Blit(cmd, asciiRenderTarget.Identifier(), renderSource);
 
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
@@ -191,11 +206,15 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         m_ScriptablePass = new CustomRenderPass();
 
         
-        m_ScriptablePass.InitializeRenderTextures();
+        m_ScriptablePass.InitializeRenderTextures(settings.iterations);
         m_ScriptablePass.SetIterations(settings.iterations);
 
         // Configures where the render pass should be injected.
+        if (settings.renderPassEvent == RenderPassEvent.AfterRenderingPostProcessing)
+            settings.renderPassEvent = RenderPassEvent.AfterRendering;
+
         m_ScriptablePass.renderPassEvent = settings.renderPassEvent;
+
     }
 
     // Here you can inject one or multiple render passes in the renderer.
@@ -216,7 +235,8 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
 
         m_ScriptablePass.SetupASCIIMaterial(shaderData);
         m_ScriptablePass.InitializeRescaleMaterial();
-
+        bool isAfterRendering = settings.renderPassEvent == RenderPassEvent.AfterRendering ? true : false;
+        m_ScriptablePass.SetRenderEventState(isAfterRendering);
         m_ScriptablePass.SetSource(renderer.cameraColorTarget);
         renderer.EnqueuePass(m_ScriptablePass);
     }

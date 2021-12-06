@@ -10,43 +10,43 @@
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"f51c09e2-a373-43a3-ac82-d3e9c56fc27b\"\n    },\n    \"m_Name\": \"Number of Characters\",\n    \"m_DefaultReferenceName\": \"Vector1_CAFAB1A6\",\n    \"m_OverrideReferenceName\": \"_ASCIICharacterCount\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 10.0,\n    \"m_FloatType\": 2,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"f51c09e2-a373-43a3-ac82-d3e9c56fc27b\"\n    },\n    \"m_Name\": \"Number of Characters\",\n    \"m_DefaultReferenceName\": \"Vector1_CAFAB1A6\",\n    \"m_OverrideReferenceName\": \"_ASCIICharacterCount\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 10.0,\n    \"m_FloatType\": 2,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.Vector2ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"b02ecf1e-9f0b-4e60-8576-0d414a35e52e\"\n    },\n    \"m_Name\": \"Res\",\n    \"m_DefaultReferenceName\": \"Vector2_B90F3A89\",\n    \"m_OverrideReferenceName\": \"_ASCIIResolution\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"x\": 64.0,\n        \"y\": 32.0,\n        \"z\": 0.0,\n        \"w\": 0.0\n    }\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"b02ecf1e-9f0b-4e60-8576-0d414a35e52e\"\n    },\n    \"m_Name\": \"Res\",\n    \"m_DefaultReferenceName\": \"Vector2_B90F3A89\",\n    \"m_OverrideReferenceName\": \"_ASCIIResolution\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"x\": 64.0,\n        \"y\": 32.0,\n        \"z\": 0.0,\n        \"w\": 0.0\n    }\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"779f42fc-d5b4-4f05-9812-e9ddf49d25d9\"\n    },\n    \"m_Name\": \"Font Ratio (1:X)\",\n    \"m_DefaultReferenceName\": \"Vector1_A9E070E5\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontRatio\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 3.0,\n    \"m_FloatType\": 0,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"779f42fc-d5b4-4f05-9812-e9ddf49d25d9\"\n    },\n    \"m_Name\": \"Font Ratio (1:X)\",\n    \"m_DefaultReferenceName\": \"Vector1_A9E070E5\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontRatio\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 3.0,\n    \"m_FloatType\": 0,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"ae8b3aaf-04bf-494d-8ab0-24299dd8d216\"\n    },\n    \"m_Name\": \"Font Color\",\n    \"m_DefaultReferenceName\": \"Color_2F2022BC\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontColor\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"r\": 1.0,\n        \"g\": 1.0,\n        \"b\": 1.0,\n        \"a\": 0.0\n    },\n    \"m_ColorMode\": 1\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"ae8b3aaf-04bf-494d-8ab0-24299dd8d216\"\n    },\n    \"m_Name\": \"Font Color\",\n    \"m_DefaultReferenceName\": \"Color_2F2022BC\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontColor\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"r\": 1.0,\n        \"g\": 1.0,\n        \"b\": 1.0,\n        \"a\": 0.0\n    },\n    \"m_ColorMode\": 1\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"482beeb5-73fd-4d6a-be34-ef077d8b4699\"\n    },\n    \"m_Name\": \"Font Color Strength\",\n    \"m_DefaultReferenceName\": \"Vector1_7589DF61\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontColorStrength\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 0.0,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"482beeb5-73fd-4d6a-be34-ef077d8b4699\"\n    },\n    \"m_Name\": \"Font Color Strength\",\n    \"m_DefaultReferenceName\": \"Vector1_7589DF61\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontColorStrength\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 0.0,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"0aa7e276-f322-470f-99f2-e94158429433\"\n    },\n    \"m_Name\": \"Backing Color\",\n    \"m_DefaultReferenceName\": \"Color_49A8236E\",\n    \"m_OverrideReferenceName\": \"_ASCIIBackingColor\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"r\": 0.0,\n        \"g\": 0.0,\n        \"b\": 0.0,\n        \"a\": 0.0\n    },\n    \"m_ColorMode\": 1\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"0aa7e276-f322-470f-99f2-e94158429433\"\n    },\n    \"m_Name\": \"Backing Color\",\n    \"m_DefaultReferenceName\": \"Color_49A8236E\",\n    \"m_OverrideReferenceName\": \"_ASCIIBackingColor\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"r\": 0.0,\n        \"g\": 0.0,\n        \"b\": 0.0,\n        \"a\": 0.0\n    },\n    \"m_ColorMode\": 1\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"efec04da-5127-4cb9-bafc-e59398e08cba\"\n    },\n    \"m_Name\": \"Backing Color Strength\",\n    \"m_DefaultReferenceName\": \"Vector1_8102E8C4\",\n    \"m_OverrideReferenceName\": \"_ASCIIBackingColorStrength\",\n    \"m_GeneratePropertyBlock\": false,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 0.0,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"efec04da-5127-4cb9-bafc-e59398e08cba\"\n    },\n    \"m_Name\": \"Backing Color Strength\",\n    \"m_DefaultReferenceName\": \"Vector1_8102E8C4\",\n    \"m_OverrideReferenceName\": \"_ASCIIBackingColorStrength\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": 0.0,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    }\n}"
         },
         {
             "typeInfo": {
