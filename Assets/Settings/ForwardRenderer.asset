@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ForwardRenderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
-  - {fileID: 161272929253931063}
-  m_RendererFeatureMap: 373811ecdff43c02
+  - {fileID: 2621031769369273372}
+  m_RendererFeatureMap: 1ce444e681c65f24
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -37,7 +37,7 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
---- !u!114 &161272929253931063
+--- !u!114 &2621031769369273372
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -51,5 +51,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    material: {fileID: 2100000, guid: 3d14e28fec993934bb3987a3242a940c, type: 2}
+    numberOfCharacters: 10
+    resolution: {x: 64, y: 32}
+    fontRatio: 3
+    fontColor: {r: 1, g: 1, b: 1, a: 1}
+    fontColorStrength: 1
+    backingColor: {r: 0, g: 0, b: 0, a: 1}
+    backingColorStrength: 0.2
+    iterations: 4
     renderPassEvent: 550
