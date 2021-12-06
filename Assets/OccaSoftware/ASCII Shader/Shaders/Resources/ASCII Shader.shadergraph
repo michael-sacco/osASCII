@@ -53,12 +53,6 @@
                 "fullName": "UnityEditor.ShaderGraph.Internal.Texture2DShaderProperty"
             },
             "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"ee096542-2927-427e-86aa-15d3e53b78a0\"\n    },\n    \"m_Name\": \"Font Asset\",\n    \"m_DefaultReferenceName\": \"Texture2D_24F6ED5\",\n    \"m_OverrideReferenceName\": \"_ASCIIFontAsset\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"m_SerializedTexture\": \"{\\\"texture\\\":{\\\"instanceID\\\":0}}\",\n        \"m_Guid\": \"\"\n    },\n    \"m_Modifiable\": true,\n    \"m_DefaultType\": 1\n}"
-        },
-        {
-            "typeInfo": {
-                "fullName": "UnityEditor.ShaderGraph.Internal.Vector2ShaderProperty"
-            },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"0f06a0e0-a6f1-4800-80f4-58917f6982e6\"\n    },\n    \"m_Name\": \"Aspect Ratio\",\n    \"m_DefaultReferenceName\": \"Vector2_5B5413D8\",\n    \"m_OverrideReferenceName\": \"_ASCIIAspectRatio\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Precision\": 0,\n    \"m_GPUInstanced\": false,\n    \"m_Hidden\": false,\n    \"m_Value\": {\n        \"x\": 3.0,\n        \"y\": 4.0,\n        \"z\": 0.0,\n        \"w\": 0.0\n    }\n}"
         }
     ],
     "m_SerializedKeywords": [],

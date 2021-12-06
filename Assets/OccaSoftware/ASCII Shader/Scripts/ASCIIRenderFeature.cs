@@ -16,8 +16,6 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
 
         //For Rescaling
         private Material rescaleMaterial;
-        //RenderTargetHandle currentSource;
-        //RenderTargetHandle currentTarget;
         List<RenderTargetHandle> renderTargetHandles;
         RenderTargetHandle finalUpscaleHandle;
 
@@ -48,7 +46,6 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             asciiMaterial.SetColor(ShaderParams.backingColor, shaderData.backingColor);
             asciiMaterial.SetFloat(ShaderParams.backingColorStrength, shaderData.backingColorStrength);
             asciiMaterial.SetTexture(ShaderParams.fontAsset, shaderData.fontAsset);
-            asciiMaterial.SetVector(ShaderParams.aspectRatio, shaderData.aspectRatio);
         }
 
         public void SetSource(RenderTargetIdentifier source)
@@ -245,8 +242,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             settings.fontColorStrength,
             settings.backingColor,
             settings.backingColorStrength,
-            settings.fontAsset,
-            settings.aspectRatio
+            settings.fontAsset
             );
 
         m_ScriptablePass.SetShaderData(shaderData);
@@ -264,9 +260,8 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public Color backingColor;
         public float backingColorStrength;
         public Texture2D fontAsset;
-        public Vector4 aspectRatio;
 
-        public ASCIIShaderData(int numberOfCharacters, Vector2Int resolution, float fontRatio, Color fontColor, float fontColorStrength, Color backingColor, float backingColorStrength, Texture2D fontAsset, Vector2Int aspectRatio)
+        public ASCIIShaderData(int numberOfCharacters, Vector2Int resolution, float fontRatio, Color fontColor, float fontColorStrength, Color backingColor, float backingColorStrength, Texture2D fontAsset)
         {
             this.numberOfCharacters = numberOfCharacters;
             this.resolution = new Vector4(resolution.x, resolution.y, 0, 0);
@@ -276,7 +271,6 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             this.backingColor = backingColor;
             this.backingColorStrength = backingColorStrength;
             this.fontAsset = fontAsset;
-            this.aspectRatio = new Vector4(aspectRatio.x, aspectRatio.y, 0, 0);
         }
     }
 
@@ -291,7 +285,6 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public static int backingColor = Shader.PropertyToID("_ASCIIBackingColor");
         public static int backingColorStrength = Shader.PropertyToID("_ASCIIBackingColorStrength");
         public static int fontAsset = Shader.PropertyToID("_ASCIIFontAsset");
-        public static int aspectRatio = Shader.PropertyToID("_ASCIIASpectRatio");
     }
 
     public Vector2Int GetAspectRatio(AspectRatio aspectRatioDesc, Vector2Int customAspectRatio, bool flip)
