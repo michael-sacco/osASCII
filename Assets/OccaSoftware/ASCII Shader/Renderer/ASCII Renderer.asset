@@ -53,11 +53,13 @@ MonoBehaviour:
   settings:
     fontAsset: {fileID: 2800000, guid: e5cfa88641aa1d2499635b455a6e34d6, type: 3}
     numberOfCharacters: 10
-    resolution: {x: 64, y: 32}
     fontRatio: 3
+    columnCount: 36
+    aspectRatioDesc: 5
+    aspectRatio: {x: 1, y: 1}
+    flipAspect: 0
     fontColor: {r: 1, g: 1, b: 1, a: 1}
     fontColorStrength: 0
     backingColor: {r: 0, g: 0, b: 0, a: 1}
     backingColorStrength: 0.8
     iterations: 3
-    renderPassEvent: 550

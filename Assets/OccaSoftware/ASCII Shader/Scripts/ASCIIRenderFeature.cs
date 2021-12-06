@@ -2,6 +2,7 @@
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 public class ASCIIRenderFeature : ScriptableRendererFeature
 {
@@ -13,26 +14,32 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         private Material asciiMaterial;
         private RenderTargetHandle asciiRenderTarget;
 
-        //For Downscaling
+        //For Rescaling
         private Material rescaleMaterial;
-        RenderTargetHandle currentSource;
-        RenderTargetHandle currentTarget;
-        List<RenderTargetHandle> renderTargetHandles = new List<RenderTargetHandle>();
+        //RenderTargetHandle currentSource;
+        //RenderTargetHandle currentTarget;
+        List<RenderTargetHandle> renderTargetHandles;
         RenderTargetHandle finalUpscaleHandle;
 
         private int iterations = 5;
+        ASCIIShaderData shaderData;
 
-        bool isAfterRendering = false;
-        
-
-        public void SetSource(RenderTargetIdentifier identifier)
+        public CustomRenderPass(int iterations)
         {
-            source = identifier;
+            this.iterations = iterations;
+            InitializeRenderTextures(iterations);
         }
 
-        public void SetupASCIIMaterial(ASCIIShaderData shaderData)
+        public void SetShaderData(ASCIIShaderData shaderData)
         {
-            asciiMaterial = CoreUtils.CreateEngineMaterial("Shader Graphs/ASCII Shader");
+            this.shaderData = shaderData;
+        }
+
+        public void SetAsciiMaterialParameters()
+        {
+            if (asciiMaterial == null)
+                return;
+
             asciiMaterial.SetFloat(ShaderParams.numberOfCharacters, shaderData.numberOfCharacters);
             asciiMaterial.SetVector(ShaderParams.resolution, shaderData.resolution);
             asciiMaterial.SetFloat(ShaderParams.fontRatio, shaderData.fontRatio);
@@ -41,34 +48,24 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             asciiMaterial.SetColor(ShaderParams.backingColor, shaderData.backingColor);
             asciiMaterial.SetFloat(ShaderParams.backingColorStrength, shaderData.backingColorStrength);
             asciiMaterial.SetTexture(ShaderParams.fontAsset, shaderData.fontAsset);
+            asciiMaterial.SetVector(ShaderParams.aspectRatio, shaderData.aspectRatio);
         }
 
-
-        public void InitializeRescaleMaterial()
+        public void SetSource(RenderTargetIdentifier source)
         {
-            rescaleMaterial = CoreUtils.CreateEngineMaterial("Shader Graphs/Image Filtering Shader");
+            this.source = source;
         }
 
-        public void SetIterations(int iterations)
-        {
-            this.iterations = iterations;
-        }
 
         public void InitializeRenderTextures(int iterations)
         {
             asciiRenderTarget.Init("_ASCIITarget");
             if(iterations >= 1)
             {
-                currentSource.Init("_CurrentSource");
-                currentTarget.Init("_CurrentTarget");
                 finalUpscaleHandle.Init("_FinalUpscale");
             }
         }
 
-        public void SetRenderEventState(bool isAfterRendering)
-        {
-            this.isAfterRendering = isAfterRendering;
-        }
 
         // This method is called before executing the render pass.
         // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
@@ -80,6 +77,13 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             RenderTextureDescriptor rtDescriptor = cameraTextureDescriptor;
             rtDescriptor.colorFormat = RenderTextureFormat.DefaultHDR;
             cmd.GetTemporaryRT(asciiRenderTarget.id, rtDescriptor);
+
+            CoreUtils.Destroy(asciiMaterial);
+            CoreUtils.Destroy(rescaleMaterial);
+            asciiMaterial = CoreUtils.CreateEngineMaterial("Shader Graphs/ASCII Shader");
+
+            if(iterations >= 1)
+                rescaleMaterial = CoreUtils.CreateEngineMaterial("Shader Graphs/Image Filtering Shader");
         }
 
         // Here you can implement the rendering logic.
@@ -90,23 +94,27 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         {
             CommandBuffer cmd = CommandBufferPool.Get("ASCIIPass");
 
+            if (asciiMaterial == null)
+                return;
+
             RenderTextureDescriptor rtDescriptor = renderingData.cameraData.cameraTargetDescriptor;
             rtDescriptor.colorFormat = RenderTextureFormat.DefaultHDR;
-            
-            if(renderTargetHandles.Count > 0)
-                renderTargetHandles.Clear();
 
-            RenderTargetIdentifier renderSource = isAfterRendering ? "_AfterPostProcessTexture" : source;
-            RenderTargetIdentifier asciiSource = renderSource;
+            SetAsciiMaterialParameters();
 
             if (iterations >= 1)
             {
+                if (rescaleMaterial == null)
+                    return;
+
+                renderTargetHandles = new List<RenderTargetHandle>();
                 RenderTextureDescriptor downscaleDescriptor = rtDescriptor;
                 rescaleMaterial.SetFloat("_Rescale_UVOffset", 1.0f);
+                
                 for (int i = 0; i < iterations; i++)
                 {
-                    downscaleDescriptor.width /= 2;
-                    downscaleDescriptor.height /= 2;
+                    downscaleDescriptor.width = (int)(downscaleDescriptor.width * 0.5f);
+                    downscaleDescriptor.height = (int)(downscaleDescriptor.height * 0.5f);
                     if (downscaleDescriptor.width < 2 || downscaleDescriptor.height < 2)
                     {
                         iterations = i;
@@ -118,34 +126,25 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
                     cmd.GetTemporaryRT(tempHandle.id, downscaleDescriptor);
                     renderTargetHandles.Add(tempHandle);
 
-                    if (i == 0)
-                    {
-                        Blit(cmd, renderSource, tempHandle.Identifier(), rescaleMaterial);
-                    }
-                    else
-                    {
-                        Blit(cmd, currentSource.Identifier(), tempHandle.Identifier(), rescaleMaterial);
-                    }
-
-                    currentSource = tempHandle;
+                    RenderTargetIdentifier downscaleSource = i == 0 ? source : renderTargetHandles[i-1].Identifier();
+                    Blit(cmd, downscaleSource, tempHandle.Identifier(), rescaleMaterial);
                 }
 
                 rescaleMaterial.SetFloat("_Rescale_UVOffset", 0.5f);
                 for (int i = 1; i < renderTargetHandles.Count; i++)
                 {
-                    currentTarget = renderTargetHandles[renderTargetHandles.Count - i - 1];
+                    RenderTargetHandle currentSource = renderTargetHandles[renderTargetHandles.Count - i];
+                    RenderTargetHandle currentTarget = renderTargetHandles[renderTargetHandles.Count - i - 1];
                     Blit(cmd, currentSource.Identifier(), currentTarget.Identifier(), rescaleMaterial);
-                    currentSource = currentTarget;
                 }
 
-                
                 cmd.GetTemporaryRT(finalUpscaleHandle.id, rtDescriptor);
-                Blit(cmd, currentSource.Identifier(), finalUpscaleHandle.Identifier(), rescaleMaterial);
-                asciiSource = finalUpscaleHandle.id;
+                Blit(cmd, renderTargetHandles[0].id, finalUpscaleHandle.id, rescaleMaterial);
             }
 
-            Blit(cmd, asciiSource, asciiRenderTarget.Identifier(), asciiMaterial);
-            Blit(cmd, asciiRenderTarget.Identifier(), renderSource);
+            RenderTargetIdentifier asciiMatInputTex = iterations >= 1 ? finalUpscaleHandle.id : source;
+            Blit(cmd, asciiMatInputTex, asciiRenderTarget.Identifier(), asciiMaterial);
+            Blit(cmd, asciiRenderTarget.Identifier(), source);
 
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
@@ -155,12 +154,18 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         /// Cleanup any allocated resources that were created during the execution of this render pass.
         public override void FrameCleanup(CommandBuffer cmd)
         {
+
             cmd.ReleaseTemporaryRT(asciiRenderTarget.id);
-            cmd.ReleaseTemporaryRT(currentSource.id);
-            cmd.ReleaseTemporaryRT(currentTarget.id);
-            for(int i= 0; i < renderTargetHandles.Count; i++)
+
+            if(finalUpscaleHandle != null)
+                cmd.ReleaseTemporaryRT(finalUpscaleHandle.id);
+
+            if(renderTargetHandles != null)
             {
-                cmd.ReleaseTemporaryRT(renderTargetHandles[i].id);
+                for (int i = 0; i < renderTargetHandles.Count; i++)
+                {
+                    cmd.ReleaseTemporaryRT(renderTargetHandles[i].id);
+                }
             }
         }
     }
@@ -174,11 +179,14 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         [Min(1)]
         public int numberOfCharacters = 10;
         [Min(1)]
-        public Vector2Int resolution = new Vector2Int(64, 32);
-        [Min(1)]
         public float fontRatio = 3;
 
         [Header("Display Settings")]
+        [Min(1)]
+        public int columnCount = 64;
+        public AspectRatio aspectRatioDesc;
+        public Vector2Int aspectRatio = new Vector2Int(1, 1);
+        public bool flipAspect = false;
         [ColorUsage(false, true)]
         public Color fontColor = Color.white;
         [Range(0f, 1f)]
@@ -191,57 +199,62 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         [Header("Rescaling Settings")]
         [Range(0,8)]
         public int iterations = 4;
-
-
-        [Header("Rendering Settings")]
-        public RenderPassEvent renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
     }
 
     CustomRenderPass m_ScriptablePass;
     public Settings settings = new Settings();
     ASCIIShaderData shaderData;
+    Vector2Int resolution;
+
+    Vector2Int screenSize;
 
     public override void Create()
     {
-        m_ScriptablePass = new CustomRenderPass();
-
-        
-        m_ScriptablePass.InitializeRenderTextures(settings.iterations);
-        m_ScriptablePass.SetIterations(settings.iterations);
+        m_ScriptablePass = new CustomRenderPass(settings.iterations);
+        screenSize = new Vector2Int(Screen.width, Screen.height);
+        UpdateResolutionParam();
 
         // Configures where the render pass should be injected.
-        if (settings.renderPassEvent == RenderPassEvent.AfterRenderingPostProcessing)
-            settings.renderPassEvent = RenderPassEvent.AfterRendering;
+        m_ScriptablePass.renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+    }
 
-        m_ScriptablePass.renderPassEvent = settings.renderPassEvent;
-
+    private void UpdateResolutionParam()
+    {
+        settings.aspectRatio = GetAspectRatio(settings.aspectRatioDesc, settings.aspectRatio, settings.flipAspect);
+        resolution = new Vector2Int(settings.columnCount, 1);
+        resolution.y = (int)(((float)Screen.height / Screen.width) * resolution.x * ((float)settings.aspectRatio.x / settings.aspectRatio.y));
+        Debug.Log(resolution);
     }
 
     // Here you can inject one or multiple render passes in the renderer.
     // This method is called when setting up the renderer once per-camera.
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
+        if (screenSize.x != Screen.width || screenSize.y != Screen.height)
+        {
+            screenSize = new Vector2Int(Screen.width, Screen.height);
+            UpdateResolutionParam();
+        }
+            
 
         shaderData = new ASCIIShaderData(
             settings.numberOfCharacters,
-            settings.resolution,
+            resolution,
             settings.fontRatio,
             settings.fontColor,
             settings.fontColorStrength,
             settings.backingColor,
             settings.backingColorStrength,
-            settings.fontAsset
+            settings.fontAsset,
+            settings.aspectRatio
             );
 
-        m_ScriptablePass.SetupASCIIMaterial(shaderData);
-        m_ScriptablePass.InitializeRescaleMaterial();
-        bool isAfterRendering = settings.renderPassEvent == RenderPassEvent.AfterRendering ? true : false;
-        m_ScriptablePass.SetRenderEventState(isAfterRendering);
+        m_ScriptablePass.SetShaderData(shaderData);
         m_ScriptablePass.SetSource(renderer.cameraColorTarget);
         renderer.EnqueuePass(m_ScriptablePass);
     }
 
-    public class ASCIIShaderData
+    private class ASCIIShaderData
     {
         public int numberOfCharacters;
         public Vector4 resolution;
@@ -251,8 +264,9 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public Color backingColor;
         public float backingColorStrength;
         public Texture2D fontAsset;
+        public Vector4 aspectRatio;
 
-        public ASCIIShaderData(int numberOfCharacters, Vector2Int resolution, float fontRatio, Color fontColor, float fontColorStrength, Color backingColor, float backingColorStrength, Texture2D fontAsset)
+        public ASCIIShaderData(int numberOfCharacters, Vector2Int resolution, float fontRatio, Color fontColor, float fontColorStrength, Color backingColor, float backingColorStrength, Texture2D fontAsset, Vector2Int aspectRatio)
         {
             this.numberOfCharacters = numberOfCharacters;
             this.resolution = new Vector4(resolution.x, resolution.y, 0, 0);
@@ -262,6 +276,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
             this.backingColor = backingColor;
             this.backingColorStrength = backingColorStrength;
             this.fontAsset = fontAsset;
+            this.aspectRatio = new Vector4(aspectRatio.x, aspectRatio.y, 0, 0);
         }
     }
 
@@ -276,6 +291,51 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         public static int backingColor = Shader.PropertyToID("_ASCIIBackingColor");
         public static int backingColorStrength = Shader.PropertyToID("_ASCIIBackingColorStrength");
         public static int fontAsset = Shader.PropertyToID("_ASCIIFontAsset");
+        public static int aspectRatio = Shader.PropertyToID("_ASCIIASpectRatio");
+    }
+
+    public Vector2Int GetAspectRatio(AspectRatio aspectRatioDesc, Vector2Int customAspectRatio, bool flip)
+    {
+        Vector2Int temp = GetAspectRatio(aspectRatioDesc, customAspectRatio);
+        if (flip)
+            temp = new Vector2Int(temp.y, temp.x);
+        
+        return temp;
+    }
+
+    public Vector2Int GetAspectRatio(AspectRatio aspectRatioDesc, Vector2Int customAspectRatio)
+    {
+        switch (aspectRatioDesc)
+        {
+            case AspectRatio.SixteenToNine:
+                return new Vector2Int(16, 9);
+            case AspectRatio.SixteenToTen:
+                return new Vector2Int(16, 10);
+            case AspectRatio.ThreeToTwo:
+                return new Vector2Int(3, 2);
+            case AspectRatio.FourToThree:
+                return new Vector2Int(4, 3);
+            case AspectRatio.FiveToFour:
+                return new Vector2Int(5, 4);
+            case AspectRatio.OneToOne:
+                return new Vector2Int(1, 1);
+            case AspectRatio.Custom:
+                return customAspectRatio;
+            default:
+                return new Vector2Int(1, 1);
+        }
+            
+    }
+
+    public enum AspectRatio
+    {
+        [InspectorName("16:9")] SixteenToNine,
+        [InspectorName("16:10")] SixteenToTen,
+        [InspectorName("3:2")] ThreeToTwo,
+        [InspectorName("4:3")] FourToThree,
+        [InspectorName("5:4")] FiveToFour,
+        [InspectorName("1:1")] OneToOne,
+        Custom
     }
 }
 
