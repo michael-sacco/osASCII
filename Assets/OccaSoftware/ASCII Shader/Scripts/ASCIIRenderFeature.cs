@@ -180,18 +180,20 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
 
         [Header("Display Settings")]
         [Min(1)]
-        public int columnCount = 64;
-        public AspectRatio aspectRatioDesc;
+        public int columnCount = 96;
+        
+        public AspectRatio aspectRatioDesc = AspectRatio.OneToOne;
+        [HideInInspector]
         public Vector2Int aspectRatio = new Vector2Int(1, 1);
         public bool flipAspect = false;
         [ColorUsage(false, true)]
         public Color fontColor = Color.white;
         [Range(0f, 1f)]
-        public float fontColorStrength = 1f;
+        public float fontColorStrength = 0.0f;
         [ColorUsage(false, true)]
         public Color backingColor = Color.black;
         [Range(0f, 1f)]
-        public float backingColorStrength = 0.2f;
+        public float backingColorStrength = 0.8f;
 
         [Header("Rescaling Settings")]
         [Range(0,8)]
@@ -201,7 +203,11 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
     CustomRenderPass m_ScriptablePass;
     public Settings settings = new Settings();
     ASCIIShaderData shaderData;
-    Vector2Int resolution;
+
+    [HideInInspector]
+    public Vector2Int cachedScreenResolution;
+    [HideInInspector]
+    public int cachedColumnCount;
 
     Vector2Int screenSize;
 
@@ -209,6 +215,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
     {
         m_ScriptablePass = new CustomRenderPass(settings.iterations);
         screenSize = new Vector2Int(Screen.width, Screen.height);
+        cachedColumnCount = settings.columnCount;
         UpdateResolutionParam();
 
         // Configures where the render pass should be injected.
@@ -218,16 +225,17 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
     private void UpdateResolutionParam()
     {
         settings.aspectRatio = GetAspectRatio(settings.aspectRatioDesc, settings.aspectRatio, settings.flipAspect);
-        resolution = new Vector2Int(settings.columnCount, 1);
-        resolution.y = (int)(((float)Screen.height / Screen.width) * resolution.x * ((float)settings.aspectRatio.x / settings.aspectRatio.y));
+        cachedScreenResolution = new Vector2Int(settings.columnCount, 1);
+        cachedScreenResolution.y = (int)(((float)Screen.height / Screen.width) * cachedScreenResolution.x * ((float)settings.aspectRatio.x / settings.aspectRatio.y));
     }
 
     // Here you can inject one or multiple render passes in the renderer.
     // This method is called when setting up the renderer once per-camera.
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (screenSize.x != Screen.width || screenSize.y != Screen.height)
+        if (screenSize.x != Screen.width || screenSize.y != Screen.height || cachedColumnCount != settings.columnCount)
         {
+            cachedColumnCount = settings.columnCount;
             screenSize = new Vector2Int(Screen.width, Screen.height);
             UpdateResolutionParam();
         }
@@ -235,7 +243,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
 
         shaderData = new ASCIIShaderData(
             settings.numberOfCharacters,
-            resolution,
+            cachedScreenResolution,
             settings.fontRatio,
             settings.fontColor,
             settings.fontColorStrength,
@@ -249,7 +257,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         renderer.EnqueuePass(m_ScriptablePass);
     }
 
-    private class ASCIIShaderData
+    public class ASCIIShaderData
     {
         public int numberOfCharacters;
         public Vector4 resolution;
@@ -311,8 +319,6 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
                 return new Vector2Int(5, 4);
             case AspectRatio.OneToOne:
                 return new Vector2Int(1, 1);
-            case AspectRatio.Custom:
-                return customAspectRatio;
             default:
                 return new Vector2Int(1, 1);
         }
@@ -326,8 +332,7 @@ public class ASCIIRenderFeature : ScriptableRendererFeature
         [InspectorName("3:2")] ThreeToTwo,
         [InspectorName("4:3")] FourToThree,
         [InspectorName("5:4")] FiveToFour,
-        [InspectorName("1:1")] OneToOne,
-        Custom
+        [InspectorName("1:1")] OneToOne
     }
 }
 
