@@ -3,7 +3,7 @@ A simple ASCII Screen Shader for Unity URP\
 Convert your 2D or 3D scene to Ascii Art in real time.\
 
 [Learn more about this free Ascii Screen Shader on the OccaSoftware website](https://occasoftware.com/)\
-
+[Also available on the Unity Asset Store](https://www.occasoftware.com/assets/ascii)
 Render your scene in an ASCII art style. Works with any font.
 
 -   Game-ready asset
